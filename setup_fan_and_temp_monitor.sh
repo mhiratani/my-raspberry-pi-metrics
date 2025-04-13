@@ -2,7 +2,7 @@
 
 # 現在のユーザー名を取得
 CURRENT_USER=$(whoami)
-METRICS_NAME="$METRICS_NAME"
+METRICS_NAME="raspberry-metrics"
 HOME_DIR="/home/$CURRENT_USER"
 PROJECT_DIR="$HOME_DIR/my-raspberry-pi-metrics"
 VENV_DIR="$PROJECT_DIR/venv"
@@ -77,7 +77,7 @@ echo -e "${GREEN}パッケージのインストールが完了しました。${N
 
 # systemdサービスファイルの作成
 if [ -f "/etc/systemd/system/$METRICS_NAME.service" ]; then
-    echo -e "${YELLOW}systemdサービスファイル$METRICS_NAMEは既に存在します。${NC}"
+    echo -e "${YELLOW}systemdサービスファイル$METRICS_NAME.serviceは既に存在します。${NC}"
     read -p "上書きしますか？ (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -91,7 +91,7 @@ fi
 
 # systemdタイマーファイルの作成
 if [ -f "/etc/systemd/system/$METRICS_NAME.timer" ]; then
-    echo -e "${YELLOW}systemdタイマーファイルは既に存在します。${NC}"
+    echo -e "${YELLOW}systemdタイマーファイル$METRICS_NAME.timerは既に存在します。${NC}"
     read -p "上書きしますか？ (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
