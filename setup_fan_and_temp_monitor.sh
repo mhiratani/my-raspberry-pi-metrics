@@ -2,7 +2,7 @@
 
 # 現在のユーザー名を取得
 CURRENT_USER=$(whoami)
-METRICS_NAME="${METRICS_NAME}"
+METRICS_NAME="$METRICS_NAME"
 HOME_DIR="/home/$CURRENT_USER"
 PROJECT_DIR="$HOME_DIR/my-raspberry-pi-metrics"
 VENV_DIR="$PROJECT_DIR/venv"
@@ -76,36 +76,36 @@ deactivate
 echo -e "${GREEN}パッケージのインストールが完了しました。${NC}"
 
 # systemdサービスファイルの作成
-if [ -f "/etc/systemd/system/${METRICS_NAME}.service" ]; then
-    echo -e "${YELLOW}systemdサービスファイルは既に存在します。${NC}"
+if [ -f "/etc/systemd/system/$METRICS_NAME.service" ]; then
+    echo -e "${YELLOW}systemdサービスファイル$METRICS_NAMEは既に存在します。${NC}"
     read -p "上書きしますか？ (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo bash -c "echo '$SERVICE_CONTENT' > /etc/systemd/system/${METRICS_NAME}.service"
-        echo -e "${GREEN}systemdサービスファイルを更新しました。${NC}"
+        sudo bash -c "echo '$SERVICE_CONTENT' > /etc/systemd/system/$METRICS_NAME.service"
+        echo -e "${GREEN}systemdサービスファイル$METRICS_NAME.serviceを更新しました。${NC}"
     fi
 else
-    sudo bash -c "echo '$SERVICE_CONTENT' > /etc/systemd/system/${METRICS_NAME}.service"
-    echo -e "${GREEN}systemdサービスファイルを作成しました。${NC}"
+    sudo bash -c "echo '$SERVICE_CONTENT' > /etc/systemd/system/$METRICS_NAME.service"
+    echo -e "${GREEN}systemdサービスファイル$METRICS_NAME.serviceを作成しました。${NC}"
 fi
 
 # systemdタイマーファイルの作成
-if [ -f "/etc/systemd/system/${METRICS_NAME}.timer" ]; then
+if [ -f "/etc/systemd/system/$METRICS_NAME.timer" ]; then
     echo -e "${YELLOW}systemdタイマーファイルは既に存在します。${NC}"
     read -p "上書きしますか？ (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo bash -c "echo '$TIMER_CONTENT' > /etc/systemd/system/${METRICS_NAME}.timer"
-        echo -e "${GREEN}systemdタイマーファイルを更新しました。${NC}"
+        sudo bash -c "echo '$TIMER_CONTENT' > /etc/systemd/system/$METRICS_NAME.timer"
+        echo -e "${GREEN}systemdタイマーファイル$METRICS_NAME.timerを更新しました。${NC}"
     fi
 else
-    sudo bash -c "echo '$TIMER_CONTENT' > /etc/systemd/system/${METRICS_NAME}.timer"
-    echo -e "${GREEN}systemdタイマーファイルを作成しました。${NC}"
+    sudo bash -c "echo '$TIMER_CONTENT' > /etc/systemd/system/$METRICS_NAME.timer"
+    echo -e "${GREEN}systemdタイマーファイル$METRICS_NAME.timerを作成しました。${NC}"
 fi
 
 echo -e "\n${GREEN}セットアップが完了しました。${NC}"
 echo -e "1. ${YELLOW}$PROJECT_DIR/.env${NC} ファイルを編集して、NewRelicの情報を設定してください。"
 echo -e "2. 以下のコマンドでサービスを有効化・開始してください："
 echo -e "   ${YELLOW}sudo systemctl daemon-reload${NC}"
-echo -e "   ${YELLOW}sudo systemctl enable ${METRICS_NAME}.timer${NC}"
-echo -e "   ${YELLOW}sudo systemctl start ${METRICS_NAME}.timer${NC}"
+echo -e "   ${YELLOW}sudo systemctl enable $METRICS_NAME.timer${NC}"
+echo -e "   ${YELLOW}sudo systemctl start $METRICS_NAME.timer${NC}"
