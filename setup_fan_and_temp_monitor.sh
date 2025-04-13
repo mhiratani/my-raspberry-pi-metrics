@@ -2,7 +2,7 @@
 
 # 現在のユーザー名を取得
 CURRENT_USER=$(whoami)
-METRICS_NAME="raspberry-metrics"
+METRICS_NAME="fan-and-temp-monitor"
 HOME_DIR="/home/$CURRENT_USER"
 PROJECT_DIR="$HOME_DIR/my-raspberry-pi-metrics"
 VENV_DIR="$PROJECT_DIR/venv"
@@ -38,7 +38,7 @@ Description=Raspberry Pi Metrics About Temp And Fan Speed NewRelic Timer
 [Timer]
 OnBootSec=5min
 OnUnitActiveSec=5min
-Unit=fan-and-temp-monitor.service
+Unit=$METRICS_NAME.service
 
 [Install]
 WantedBy=timers.target"
