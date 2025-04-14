@@ -33,26 +33,33 @@ except subprocess.SubprocessError as e:
     HOSTNAME = "unknown"
 
 def run_speedtest():
-    """speedtest-cliを実行して速度テスト結果を取得"""
+    """speedtestを実行して速度テスト結果を取得"""
     try:
-        # speedtest-cliをJSON形式で実行
+        # speedtestをJSON形式で実行
         logger.info("速度テスト実行中...")
-        result = subprocess.run(['speedtest-cli', '--json'], capture_output=True, text=True, check=True)
+        result = subprocess.run(['speedtest', '-f', 'json'], capture_output=True, text=True, check=True)
         
         try:
             data = json.loads(result.stdout)
             
-            # 必要なデータを抽出
-            download_speed = data['download'] / 1000000  # bpsをMbpsに変換
-            upload_speed = data['upload'] / 1000000      # bpsをMbpsに変換
-            ping = data['ping']
+            # バンド幅をbyte/sからMbpsに変換 (byte/s ÷ 125000 = Mbps)
+            download_speed = data['download']['bandwidth'] / 125000
+            upload_speed = data['upload']['bandwidth'] / 125000
+            ping = data['ping']['latency']
             
             logger.info(f"速度テスト完了: ダウンロード {download_speed:.2f} Mbps, アップロード {upload_speed:.2f} Mbps, Ping {ping:.2f} ms")
+            
+            jitter = data['ping']['jitter']
+            packet_loss = data.get('packetLoss', 0)
+            isp = data.get('isp', 'Unknown')
             
             return {
                 "download_mbps": download_speed,
                 "upload_mbps": upload_speed,
                 "ping_ms": ping,
+                "jitter_ms": jitter,
+                "packet_loss": packet_loss,
+                "isp": isp,
                 "timestamp": datetime.now().isoformat(),
                 "hostname": HOSTNAME
             }
@@ -62,7 +69,7 @@ def run_speedtest():
             return None
             
     except subprocess.CalledProcessError as e:
-        logger.error(f"speedtest-cli実行エラー: {e}")
+        logger.error(f"speedtest実行エラー: {e}")
         if e.stderr:
             logger.error(f"エラー出力: {e.stderr}")
         return None
@@ -82,6 +89,9 @@ def send_to_newrelic(data):
         "downloadSpeed": data["download_mbps"],
         "uploadSpeed": data["upload_mbps"],
         "pingLatency": data["ping_ms"],
+        "jitter": data["jitter_ms"],
+        "packetLoss": data["packet_loss"],
+        "isp": data["isp"],
         "timestamp": data["timestamp"],
         "hostname": data["hostname"]
     }
