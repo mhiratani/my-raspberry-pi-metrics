@@ -21,7 +21,6 @@ After=network.target
 [Service]
 ExecStart=$VENV_DIR/bin/python $PROJECT_DIR/fan_and_temp_monitor.py
 
-Restart=always
 RestartSec=60
 User=$CURRENT_USER
 Group=$CURRENT_USER
