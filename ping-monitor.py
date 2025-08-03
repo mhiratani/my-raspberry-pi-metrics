@@ -10,7 +10,7 @@ LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 LINE_TO_ID = os.getenv("LINE_TO_ID")
 LINE_API_URL = os.getenv("LINE_API_URL")
 
-TARGET_IP = "192.168.30.4" # 監視対象のIPアドレス
+TARGET_IP = "192.168.1.5" # 監視対象のIPアドレス
 
 def get_hostname():
     """現在のホスト名を取得します。"""
@@ -72,8 +72,20 @@ def check_ping(ip_address):
 
 if __name__ == "__main__":
     if not check_ping(TARGET_IP):
-        message = f"{TARGET_IP} へのPingが失敗しました。ネットワーク接続を確認してください。"
+        message = f"{TARGET_IP} へのPingが失敗しました。DHCPサービスを再起動します。"
         send_line_message(message)
+
+        try:
+            result = subprocess.run(
+                ["sudo", "systemctl", "restart", "isc-dhcp-server.service"],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            print("DHCPサービスの再起動に成功しました。")
+        except subprocess.CalledProcessError as e:
+            print(f"DHCPサービスの再起動に失敗しました:\n{e.stderr}")
+            send_line_message("⚠️ DHCPサービスの再起動に失敗しました。")
     else:
         # Ping成功時には特に通知しないが、必要であればここにもメッセージ送信を追加できる
         pass
